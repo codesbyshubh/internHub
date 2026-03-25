@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>InternHub-GGI </title>
+  <link rel="stylesheet" href="main.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚀</text></svg>">
+</head>
+<body>
+
+<!-- ============ NAVBAR ============ -->
+<nav class="navbar">
+  <div class="nav-container">
+    <a class="nav-logo" onclick="navigateTo('home')" style="cursor:pointer">Intern<span>Hub</span></a>
+
+    <div class="nav-links">
+      <a class="nav-link active" data-page="home" onclick="navigateTo('home')">Home</a>
+      <a class="nav-link" data-page="internships" onclick="navigateTo('internships')">Internships</a>
+      <a class="nav-link" data-page="jobs" onclick="navigateTo('jobs')">Jobs</a>
+      <a class="nav-link employer-only hidden" data-page="post" onclick="navigateTo('post')">Post Listing</a>
+      <a class="nav-link student-only" data-page="dashboard" onclick="navigateTo('dashboard')">My Applications</a>
+    </div>
+
+    <!-- Guest actions -->
+    <div class="nav-actions" id="guest-actions">
+      <button class="btn btn-ghost btn-sm" onclick="openModal('modal-login')">Login</button>
+      <button class="btn btn-primary btn-sm" onclick="openModal('modal-register')">Sign Up Free</button>
+    </div>
+
+    <!-- Logged-in user actions -->
+    <div class="nav-actions hidden" id="user-actions">
+      <div class="user-menu">
+        <div class="user-avatar" id="user-avatar">
+          <span id="user-avatar-text">U</span>
+        </div>
+        <div class="dropdown-menu" id="user-dropdown">
+          <div style="padding:12px 12px 10px;border-bottom:1px solid var(--border);margin-bottom:6px">
+            <div style="font-weight:700;font-size:14px" id="user-name">User</div>
+            <div style="font-size:12px;color:var(--text-muted)">Account</div>
+          </div>
+          <button class="dropdown-item" onclick="navigateTo('dashboard');document.getElementById('user-dropdown').classList.remove('open')">
+            📊 Dashboard
+          </button>
+          <button class="dropdown-item employer-only hidden" onclick="navigateTo('post');document.getElementById('user-dropdown').classList.remove('open')">
+            ➕ Post Listing
+          </button>
+          <div class="dropdown-divider"></div>
+          <button class="dropdown-item" style="color:#ef4444" onclick="logout()">
+            🚪 Logout
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
+  </div>
+</nav>
+
+<!-- ============ PAGES ============ -->
+
+<!-- HOME PAGE -->
+<div class="page active" id="page-home">
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-container">
+      <div class="hero-badge">✨ India's fastest growing career platform</div>
+      <h1>Find Your Dream <span class="highlight">Internship</span><br>& Launch Your Career</h1>
+      <p>Discover 10,000+ internships and jobs from top companies. Apply in seconds, get hired faster.</p>
+
+      <!-- Search -->
+      <div class="search-box">
+        <div class="search-input-wrap">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input type="text" id="hero-search" placeholder="Search internships, jobs, skills...">
+        </div>
+        <div class="search-divider"></div>
+        <div class="search-input-wrap" style="max-width:160px">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <input type="text" placeholder="Location" style="padding-left:42px">
+        </div>
+        <button class="btn btn-primary" id="hero-search-btn" style="padding:12px 24px">
+          Search
+        </button>
+      </div>
+
+      <!-- Tabs -->
+      <div class="hero-tabs">
+        <button class="hero-tab active" data-type="internships">🎓 Internships</button>
+        <button class="hero-tab" data-type="jobs">💼 Jobs</button>
+        <button class="hero-tab" data-type="remote">🏠 Remote</button>
+        <button class="hero-tab" data-type="part-time">⏰ Part-time</button>
+      </div>
+
+      <!-- Stats -->
+      <div class="hero-stats">
+        <div>
+          <div class="hero-stat-val" id="stat-internships">5K+</div>
+          <div class="hero-stat-label">Internships</div>
+        </div>
+        <div>
+          <div class="hero-stat-val" id="stat-jobs">2K+</div>
+          <div class="hero-stat-label">Jobs</div>
+        </div>
+        <div>
+          <div class="hero-stat-val" id="stat-companies">800+</div>
+          <div class="hero-stat-label">Companies</div>
+        </div>
+        <div>
+          <div class="hero-stat-val" id="stat-students">50K+</div>
+          <div class="hero-stat-label">Students</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Categories -->
+  <section class="section" style="background:var(--bg-white)">
+    <div class="container">
+      <div class="section-header">
+        <div>
+          <div class="section-title">Explore by Category</div>
+          <div class="section-subtitle">Find opportunities in your area of interest</div>
+        </div>
+      </div>
+      <div class="categories-grid" id="categories-grid">
+        <!-- Loaded dynamically -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Internships -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <div>
+          <div class="section-title">Latest Internships</div>
+          <div class="section-subtitle">Fresh opportunities just posted</div>
+        </div>
+        <button class="btn btn-outline btn-sm" onclick="navigateTo('internships')">View All →</button>
+      </div>
+      <div class="cards-grid" id="featured-internships">
+        <div class="loading-spinner" style="grid-column:1/-1"><div class="spinner"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Jobs -->
+  <section class="section" style="background:var(--bg-white)">
+    <div class="container">
+      <div class="section-header">
+        <div>
+          <div class="section-title">Top Job Openings</div>
+          <div class="section-subtitle">Full-time opportunities waiting for you</div>
+        </div>
+        <button class="btn btn-outline btn-sm" onclick="navigateTo('jobs')">View All →</button>
+      </div>
+      <div class="cards-grid" id="featured-jobs">
+        <div class="loading-spinner" style="grid-column:1/-1"><div class="spinner"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header" style="justify-content:center;text-align:center">
+        <div>
+          <div class="section-title">How It Works</div>
+          <div class="section-subtitle">Get hired in 3 simple steps</div>
+        </div>
+      </div>
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-number">1</div>
+          <div class="step-title">Create Your Profile</div>
+          <div class="step-desc">Sign up for free and build your professional profile in minutes.</div>
+        </div>
+        <div class="step-card">
+          <div class="step-number">2</div>
+          <div class="step-title">Explore Opportunities</div>
+          <div class="step-desc">Browse thousands of internships and jobs filtered to your preferences.</div>
+        </div>
+        <div class="step-card">
+          <div class="step-number">3</div>
+          <div class="step-title">Apply & Get Hired</div>
+          <div class="step-desc">Submit applications with one click and track your status in real-time.</div>
+        </div>
+        <div class="step-card">
+          <div class="step-number">4</div>
+          <div class="step-title">Launch Your Career</div>
+          <div class="step-desc">Land your dream role and kickstart your professional journey.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section">
+    <div class="container">
+      <h2>Are You an Employer?</h2>
+      <p>Post internships and jobs for free and connect with thousands of talented candidates.</p>
+      <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap">
+        <button class="btn btn-white btn-lg" onclick="openModal('modal-register')">Post for Free →</button>
+        <button class="btn btn-lg" style="background:rgba(255,255,255,0.15);color:white;border:1px solid rgba(255,255,255,0.3)" onclick="navigateTo('internships')">Browse Talent</button>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- INTERNSHIPS PAGE -->
+<div class="page" id="page-internships">
+  <div class="page-header">
+    <div class="page-header-inner">
+      <h1>Internships</h1>
+      <p>Discover the latest internship opportunities from top companies</p>
+    </div>
+  </div>
+  <div class="container" style="padding-top:32px">
+    <!-- Filters -->
+    <div class="filters-bar">
+      <div class="filter-group" style="flex:2">
+        <label>Search</label>
+        <input type="text" id="filter-keyword" class="filter-input" placeholder="Skills, role, company..." style="min-width:200px">
+      </div>
+      <div class="filter-group">
+        <label>Category</label>
+        <select id="filter-category" class="filter-select">
+          <option value="">All Categories</option>
+          <option>Web Development</option>
+          <option>Digital Marketing</option>
+          <option>Data Science</option>
+          <option>Graphic Design</option>
+          <option>Content Writing</option>
+          <option>Finance</option>
+          <option>Human Resources</option>
+          <option>Sales</option>
+          <option>Engineering</option>
+          <option>Business Development</option>
+          <option>Machine Learning</option>
+          <option>UI/UX Design</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Type</label>
+        <select id="filter-type" class="filter-select">
+          <option value="">All Types</option>
+          <option value="work-from-home">Work From Home</option>
+          <option value="in-office">In-Office</option>
+          <option value="hybrid">Hybrid</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Min Stipend</label>
+        <select id="filter-stipend" class="filter-select">
+          <option value="">Any</option>
+          <option value="5000">₹5K+</option>
+          <option value="10000">₹10K+</option>
+          <option value="15000">₹15K+</option>
+          <option value="20000">₹20K+</option>
+          <option value="30000">₹30K+</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Location</label>
+        <input type="text" id="filter-location" class="filter-input" placeholder="City..." style="min-width:120px">
+      </div>
+      <div class="filter-group" style="justify-content:flex-end">
+        <label>&nbsp;</label>
+        <button class="btn btn-primary" id="filter-search-btn">Search</button>
+      </div>
+    </div>
+
+    <div class="cards-grid" id="internships-grid">
+      <div class="loading-spinner" style="grid-column:1/-1"><div class="spinner"></div></div>
+    </div>
+    <div id="internship-pagination" class="pagination"></div>
+  </div>
+</div>
+
+<!-- JOBS PAGE -->
+<div class="page" id="page-jobs">
+  <div class="page-header">
+    <div class="page-header-inner">
+      <h1>Jobs</h1>
+      <p>Full-time, part-time, and remote job opportunities</p>
+    </div>
+  </div>
+  <div class="container" style="padding-top:32px">
+    <!-- Filters -->
+    <div class="filters-bar">
+      <div class="filter-group" style="flex:2">
+        <label>Search</label>
+        <input type="text" id="job-filter-keyword" class="filter-input" placeholder="Role, skills, company..." style="min-width:200px">
+      </div>
+      <div class="filter-group">
+        <label>Category</label>
+        <select id="job-filter-category" class="filter-select">
+          <option value="">All Categories</option>
+          <option>Web Development</option>
+          <option>Digital Marketing</option>
+          <option>Data Science</option>
+          <option>Graphic Design</option>
+          <option>Finance</option>
+          <option>Engineering</option>
+          <option>Machine Learning</option>
+          <option>UI/UX Design</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Job Type</label>
+        <select id="job-filter-type" class="filter-select">
+          <option value="">All Types</option>
+          <option value="full-time">Full-time</option>
+          <option value="part-time">Part-time</option>
+          <option value="contract">Contract</option>
+          <option value="freelance">Freelance</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Work Mode</label>
+        <select id="job-filter-mode" class="filter-select">
+          <option value="">Any</option>
+          <option value="work-from-home">Remote</option>
+          <option value="in-office">In-Office</option>
+          <option value="hybrid">Hybrid</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Min Salary</label>
+        <select id="job-filter-salary" class="filter-select">
+          <option value="">Any</option>
+          <option value="300000">3 LPA+</option>
+          <option value="500000">5 LPA+</option>
+          <option value="800000">8 LPA+</option>
+          <option value="1200000">12 LPA+</option>
+        </select>
+      </div>
+      <div class="filter-group" style="justify-content:flex-end">
+        <label>&nbsp;</label>
+        <button class="btn btn-primary" id="job-search-btn">Search</button>
+      </div>
+    </div>
+
+    <div class="cards-grid" id="jobs-grid">
+      <div class="loading-spinner" style="grid-column:1/-1"><div class="spinner"></div></div>
+    </div>
+    <div id="job-pagination" class="pagination"></div>
+  </div>
+</div>
+
+<!-- DASHBOARD PAGE -->
+<div class="page" id="page-dashboard">
+
+  <!-- Student Dashboard -->
+  <div id="student-dashboard" class="hidden">
+    <div class="page-header">
+      <div class="page-header-inner">
+        <h1>My Dashboard</h1>
+        <p>Track your applications and saved listings</p>
+      </div>
+    </div>
+    <div class="container" style="padding-top:32px">
+      <div class="tabs" id="student-tabs">
+        <button class="tab-btn active" onclick="switchTab('student-tabs', this, 'std-tab-applications')">My Applications</button>
+        <button class="tab-btn" onclick="switchTab('student-tabs', this, 'std-tab-saved')">Saved Listings</button>
+        <button class="tab-btn" onclick="switchTab('student-tabs', this, 'std-tab-profile')">Profile</button>
+      </div>
+
+      <div id="std-tab-applications">
+        <div id="my-applications">
+          <div class="loading-spinner"><div class="spinner"></div></div>
+        </div>
+      </div>
+
+      <div id="std-tab-saved" class="hidden">
+        <div id="my-saved">
+          <div class="loading-spinner"><div class="spinner"></div></div>
+        </div>
+      </div>
+
+      <div id="std-tab-profile" class="hidden">
+        <div style="max-width:600px;background:var(--bg-white);border:1px solid var(--border);border-radius:var(--radius);padding:28px">
+          <h3 style="margin-bottom:24px">Edit Profile</h3>
+          <form id="profile-form" onsubmit="saveProfile(event)">
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Full Name</label>
+                <input class="form-control" id="prof-name" type="text" placeholder="Your name">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Phone</label>
+                <input class="form-control" id="prof-phone" type="tel" placeholder="+91 9876543210">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">College / University</label>
+              <input class="form-control" id="prof-college" type="text" placeholder="e.g. IIT Delhi">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Graduation Year</label>
+              <input class="form-control" id="prof-grad" type="number" placeholder="2025">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Skills (comma-separated)</label>
+              <input class="form-control" id="prof-skills" type="text" placeholder="Python, React, SQL...">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Bio</label>
+              <textarea class="form-control" id="prof-bio" placeholder="Tell employers about yourself..."></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Save Profile</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Employer Dashboard -->
+  <div id="employer-dashboard" class="hidden">
+    <div class="page-header">
+      <div class="page-header-inner">
+        <h1>Employer Dashboard</h1>
+        <p>Manage your listings and view applications</p>
+      </div>
+    </div>
+    <div class="container" style="padding-top:32px">
+
+      <!-- Stats -->
+      <div class="stats-grid" style="margin-bottom:32px">
+        <div class="stat-card">
+          <div class="stat-icon">🎓</div>
+          <div class="stat-value" id="emp-stat-internships">0</div>
+          <div class="stat-label">Active Internships</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">💼</div>
+          <div class="stat-value" id="emp-stat-jobs">0</div>
+          <div class="stat-label">Active Jobs</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">📬</div>
+          <div class="stat-value" id="emp-stat-applications">0</div>
+          <div class="stat-label">Total Applications</div>
+        </div>
+      </div>
+
+      <div class="tabs" id="employer-tabs">
+        <button class="tab-btn active" onclick="switchTab('employer-tabs', this, 'tab-listings')">My Listings</button>
+        <button class="tab-btn" onclick="switchTab('employer-tabs', this, 'tab-applications')">Applications</button>
+        <button class="tab-btn" onclick="switchTab('employer-tabs', this, 'tab-company')">Company Profile</button>
+      </div>
+
+      <div id="tab-listings">
+        <div style="display:flex;justify-content:flex-end;margin-bottom:16px;gap:8px">
+          <button class="btn btn-primary btn-sm" onclick="navigateTo('post')">+ Post New Listing</button>
+        </div>
+        <div id="my-listings">
+          <div class="loading-spinner"><div class="spinner"></div></div>
+        </div>
+      </div>
+
+      <div id="tab-applications" class="hidden">
+        <div id="applications-list">
+          <div class="empty-state">
+            <div class="empty-state-icon">📭</div>
+            <h3>Select a listing</h3>
+            <p>Click "Applications" button on any listing to view applicants</p>
+          </div>
+        </div>
+      </div>
+
+      <div id="tab-company" class="hidden">
+        <div style="max-width:600px;background:var(--bg-white);border:1px solid var(--border);border-radius:var(--radius);padding:28px">
+          <h3 style="margin-bottom:24px">Company Profile</h3>
+          <form onsubmit="saveCompany(event)">
+            <div class="form-group">
+              <label class="form-label">Company Name <span>*</span></label>
+              <input class="form-control" id="comp-name" type="text" required>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Industry</label>
+                <input class="form-control" id="comp-industry" type="text" placeholder="e.g. Technology">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Company Size</label>
+                <select class="form-control" id="comp-size">
+                  <option value="">Select</option>
+                  <option>1-10</option>
+                  <option>11-50</option>
+                  <option>51-200</option>
+                  <option>201-500</option>
+                  <option>500-1000</option>
+                  <option>1000+</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Location</label>
+              <input class="form-control" id="comp-location" type="text" placeholder="City, State">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Website</label>
+              <input class="form-control" id="comp-website" type="url" placeholder="https://...">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Description</label>
+              <textarea class="form-control" id="comp-desc" rows="4" placeholder="About your company..."></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Save Company Profile</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- POST LISTING PAGE -->
+<div class="page" id="page-post">
+  <div class="page-header">
+    <div class="page-header-inner">
+      <h1>Post a Listing</h1>
+      <p>Reach thousands of talented students and freshers</p>
+    </div>
+  </div>
+  <div class="container" style="padding-top:32px;max-width:800px">
+    <div class="tabs" id="post-tabs">
+      <button class="tab-btn active" onclick="switchTab('post-tabs', this, 'post-tab-internship')">🎓 Post Internship</button>
+      <button class="tab-btn" onclick="switchTab('post-tabs', this, 'post-tab-job')">💼 Post Job</button>
+    </div>
+
+    <!-- Post Internship Form -->
+    <div id="post-tab-internship" style="background:var(--bg-white);border:1px solid var(--border);border-radius:var(--radius);padding:32px">
+      <form id="post-internship-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Internship Title <span>*</span></label>
+            <input class="form-control" name="title" required placeholder="e.g. Frontend Developer Intern">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Category <span>*</span></label>
+            <select class="form-control" name="category" required>
+              <option value="">Select Category</option>
+              <option>Web Development</option>
+              <option>Digital Marketing</option>
+              <option>Data Science</option>
+              <option>Graphic Design</option>
+              <option>Content Writing</option>
+              <option>Finance</option>
+              <option>Human Resources</option>
+              <option>Sales</option>
+              <option>Engineering</option>
+              <option>Business Development</option>
+              <option>Machine Learning</option>
+              <option>UI/UX Design</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Type</label>
+            <select class="form-control" name="type">
+              <option value="in-office">In-Office</option>
+              <option value="work-from-home">Work From Home</option>
+              <option value="hybrid">Hybrid</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Location</label>
+            <input class="form-control" name="location" placeholder="City (leave blank for remote)">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Stipend Min (₹/month)</label>
+            <input class="form-control" name="stipend_min" type="number" placeholder="5000">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Stipend Max (₹/month)</label>
+            <input class="form-control" name="stipend_max" type="number" placeholder="15000">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Duration</label>
+            <input class="form-control" name="duration" placeholder="e.g. 3 months">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Openings</label>
+            <input class="form-control" name="openings" type="number" value="1" min="1">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Start Date</label>
+            <input class="form-control" name="start_date" type="date">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Apply By</label>
+            <input class="form-control" name="apply_by" type="date">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Skills Required</label>
+          <input class="form-control" name="skills_required" placeholder="e.g. HTML, CSS, JavaScript, React">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Description <span>*</span></label>
+          <textarea class="form-control" name="description" rows="6" required
+            placeholder="Describe the internship role, responsibilities, and what the intern will learn..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Perks & Benefits</label>
+          <input class="form-control" name="perks" placeholder="e.g. Certificate, Letter of Recommendation, Flexible hours">
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-lg" style="width:100%">Post Internship →</button>
+      </form>
+    </div>
+
+    <!-- Post Job Form -->
+    <div id="post-tab-job" class="hidden" style="background:var(--bg-white);border:1px solid var(--border);border-radius:var(--radius);padding:32px">
+      <form id="post-job-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Job Title <span>*</span></label>
+            <input class="form-control" name="title" required placeholder="e.g. Full Stack Developer">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Category <span>*</span></label>
+            <select class="form-control" name="category" required>
+              <option value="">Select Category</option>
+              <option>Web Development</option>
+              <option>Digital Marketing</option>
+              <option>Data Science</option>
+              <option>Graphic Design</option>
+              <option>Finance</option>
+              <option>Engineering</option>
+              <option>Machine Learning</option>
+              <option>UI/UX Design</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Job Type</label>
+            <select class="form-control" name="type">
+              <option value="full-time">Full-time</option>
+              <option value="part-time">Part-time</option>
+              <option value="contract">Contract</option>
+              <option value="freelance">Freelance</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Work Mode</label>
+            <select class="form-control" name="work_mode">
+              <option value="in-office">In-Office</option>
+              <option value="work-from-home">Remote</option>
+              <option value="hybrid">Hybrid</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Location</label>
+            <input class="form-control" name="location" placeholder="City, State">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Experience Required</label>
+            <input class="form-control" name="experience" placeholder="e.g. 0-2 years, Freshers OK">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Salary Min (₹/year)</label>
+            <input class="form-control" name="salary_min" type="number" placeholder="300000">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Salary Max (₹/year)</label>
+            <input class="form-control" name="salary_max" type="number" placeholder="600000">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Openings</label>
+            <input class="form-control" name="openings" type="number" value="1" min="1">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Apply By</label>
+            <input class="form-control" name="apply_by" type="date">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Skills Required</label>
+          <input class="form-control" name="skills_required" placeholder="e.g. Node.js, React, MySQL">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Job Description <span>*</span></label>
+          <textarea class="form-control" name="description" rows="6" required
+            placeholder="Describe the role, day-to-day responsibilities, and expectations..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Qualifications</label>
+          <textarea class="form-control" name="qualifications" rows="3"
+            placeholder="Education requirements, preferred degrees, certifications..."></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-lg" style="width:100%">Post Job →</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Login Modal -->
+<div class="modal-overlay" id="modal-login">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>Welcome Back 👋</h2>
+      <button class="modal-close" onclick="closeModal('modal-login')">×</button>
+    </div>
+    <div class="modal-body">
+      <div id="login-error" class="alert alert-error" style="display:none"></div>
+      <form id="login-form">
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <input class="form-control" id="login-email" type="email" placeholder="you@example.com" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input class="form-control" id="login-password" type="password" placeholder="Your password" required>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width:100%;margin-top:8px">Login</button>
+      </form>
+      <p style="text-align:center;margin-top:20px;font-size:14px;color:var(--text-light)">
+        Don't have an account?
+        <a style="color:var(--primary);cursor:pointer;font-weight:600" onclick="closeModal('modal-login');openModal('modal-register')">Sign Up Free</a>
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- Register Modal -->
+<div class="modal-overlay" id="modal-register">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>Create Account 🚀</h2>
+      <button class="modal-close" onclick="closeModal('modal-register')">×</button>
+    </div>
+    <div class="modal-body">
+      <div id="reg-error" class="alert alert-error" style="display:none"></div>
+      <form id="register-form">
+        <div class="form-group">
+          <label class="form-label">I am a...</label>
+          <div style="display:flex;gap:12px">
+            <label style="flex:1;border:2px solid var(--border);border-radius:var(--radius-sm);padding:14px;cursor:pointer;transition:var(--transition);display:flex;align-items:center;gap:10px" id="role-student-label">
+              <input type="radio" name="role-select" value="student" checked style="accent-color:var(--primary)">
+              <span style="font-weight:600;font-size:14px">🎓 Student</span>
+            </label>
+            <label style="flex:1;border:2px solid var(--border);border-radius:var(--radius-sm);padding:14px;cursor:pointer;transition:var(--transition);display:flex;align-items:center;gap:10px" id="role-employer-label">
+              <input type="radio" name="role-select" value="employer" style="accent-color:var(--primary)">
+              <span style="font-weight:600;font-size:14px">🏢 Employer</span>
+            </label>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Full Name <span>*</span></label>
+          <input class="form-control" id="reg-name" type="text" placeholder="Your full name" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email Address <span>*</span></label>
+          <input class="form-control" id="reg-email" type="email" placeholder="you@example.com" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password <span>*</span></label>
+          <input class="form-control" id="reg-password" type="password" placeholder="Min 6 characters" required minlength="6">
+        </div>
+        <div class="form-group" id="college-group">
+          <label class="form-label">College / University</label>
+          <input class="form-control" id="reg-college" type="text" placeholder="e.g. Delhi University">
+        </div>
+        <input type="hidden" id="reg-role" value="student">
+        <button type="submit" class="btn btn-primary" style="width:100%;margin-top:8px">Create Account</button>
+      </form>
+      <p style="text-align:center;margin-top:20px;font-size:14px;color:var(--text-light)">
+        Already have an account?
+        <a style="color:var(--primary);cursor:pointer;font-weight:600" onclick="closeModal('modal-register');openModal('modal-login')">Login</a>
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- Detail Modal -->
+<div class="modal-overlay" id="detail-modal">
+  <div class="modal" style="max-width:700px">
+    <div class="modal-header">
+      <h2>Opportunity Details</h2>
+      <button class="modal-close" onclick="closeModal('detail-modal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div id="detail-content"></div>
+      <div style="display:flex;gap:12px;margin-top:24px;padding-top:20px;border-top:1px solid var(--border)">
+        <button class="btn btn-primary btn-lg" style="flex:1" id="detail-apply-btn">Apply Now</button>
+        <button class="btn btn-ghost" onclick="closeModal('detail-modal')">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Apply Modal -->
+<div class="modal-overlay" id="modal-apply">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>Submit Application ✉️</h2>
+      <button class="modal-close" onclick="closeModal('modal-apply')">×</button>
+    </div>
+    <div class="modal-body">
+      <form id="apply-form">
+        <input type="hidden" id="apply-type">
+        <input type="hidden" id="apply-id">
+        <div class="form-group">
+          <label class="form-label">Cover Letter</label>
+          <textarea class="form-control" id="apply-cover" rows="5"
+            placeholder="Why are you interested in this role? What makes you a great fit?"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Availability</label>
+          <input class="form-control" id="apply-availability" type="text" placeholder="e.g. Available from June 1, 2024">
+        </div>
+        <div class="alert alert-info">
+          💡 Tip: A personalised cover letter greatly increases your chances of getting hired.
+        </div>
+        <button type="submit" class="btn btn-primary" style="width:100%">Submit Application</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Toast Container -->
+<div id="toast-container" class="toast-container"></div>
+
+<!-- Footer -->
+<footer>
+  <div class="footer-grid">
+    <div>
+      <div class="footer-logo">Intern<span>Hub</span></div>
+      <p class="footer-desc">India's fastest growing internship and job platform. Connecting students with top companies since 2025.</p>
+    </div>
+    <div class="footer-col">
+      <h4>For Students</h4>
+      <a class="footer-link" onclick="navigateTo('internships')">Browse Internships</a>
+      <a class="footer-link" onclick="navigateTo('jobs')">Browse Jobs</a>
+      <a class="footer-link" onclick="navigateTo('dashboard')">My Applications</a>
+    </div>
+    <div class="footer-col">
+      <h4>For Employers</h4>
+      <a class="footer-link" onclick="openModal('modal-register')">Post Internship</a>
+      <a class="footer-link" onclick="openModal('modal-register')">Post Job</a>
+      <a class="footer-link" onclick="navigateTo('dashboard')">Employer Dashboard</a>
+    </div>
+    <div class="footer-col">
+      <h4>Company</h4>
+      <a class="footer-link">About Us</a>
+      <a class="footer-link">Contact</a>
+      <a class="footer-link">Privacy Policy</a>
+      <a class="footer-link">Terms of Service</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 InternHub. All rights reserved.</span>
+    <span>Made with love for students across GGI</span>
+  </div>
+</footer>
+
+ <script src="app.js"></script>
+<script>
+// Register role toggle
+document.querySelectorAll('input[name="role-select"]').forEach(radio => {
+  radio.addEventListener('change', () => {
+    const role = radio.value;
+    document.getElementById('reg-role').value = role;
+    const collegeGroup = document.getElementById('college-group');
+    if (collegeGroup) {
+      collegeGroup.style.display = role === 'student' ? '' : 'none';
+    }
+  });
+});
+
+// Tab switching helper (override with cleaner version)
+function switchTab(tabGroupId, btnOrStr, contentId) {
+  const group = document.getElementById(tabGroupId);
+  if (!group) return;
+
+  group.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+
+  if (typeof btnOrStr === 'string') {
+    // btnOrStr is actually the contentId when called from HTML with this
+    // Reorder: switchTab(groupId, this, contentId) from HTML onclick
+  } else {
+    btnOrStr.classList.add('active');
+  }
+
+  // Hide all tab contents associated with this group
+  const allContentIds = Array.from(group.querySelectorAll('.tab-btn'))
+    .map(b => b.getAttribute('onclick'))
+    .map(str => str?.match(/'([^']+)'\)/)?.[1])
+    .filter(Boolean);
+
+  // Instead get sibling container
+  const contentContainer = group.nextElementSibling;
+  if (contentContainer) {
+    contentContainer.querySelectorAll('[id^="std-tab-"], [id^="tab-"], [id^="post-tab-"]').forEach(el => {
+      el.classList.add('hidden');
+    });
+  }
+
+  const content = document.getElementById(contentId);
+  if (content) content.classList.remove('hidden');
+}
+
+// Simpler tab switcher
+function switchTab(groupId, btn, contentId) {
+  // Update active tab button
+  document.querySelectorAll(`#${groupId} .tab-btn`).forEach(b => b.classList.remove('active'));
+  if (btn && btn.classList) btn.classList.add('active');
+
+  // Get parent container of tabs
+  const tabsEl = document.getElementById(groupId);
+  if (!tabsEl) return;
+
+  // Find the wrapping container (parent of tabs)
+  const parent = tabsEl.parentElement;
+
+  // Hide all tab content divs that are siblings
+  const contentDivs = Array.from(parent.children).filter(el => !el.classList.contains('tabs') && el.id !== groupId);
+  contentDivs.forEach(el => el.classList.add('hidden'));
+
+  const target = document.getElementById(contentId);
+  if (target) target.classList.remove('hidden');
+}
+
+async function saveProfile(e) {
+  e.preventDefault();
+  const data = {
+    name: document.getElementById('prof-name')?.value,
+    phone: document.getElementById('prof-phone')?.value,
+    college: document.getElementById('prof-college')?.value,
+    graduation_year: document.getElementById('prof-grad')?.value,
+    skills: document.getElementById('prof-skills')?.value,
+    bio: document.getElementById('prof-bio')?.value
+  };
+  const res = await apiCall('/auth/profile', 'PUT', data);
+  if (res.ok) showToast('Profile saved!', 'success');
+  else showToast(res.message, 'error');
+}
+
+async function saveCompany(e) {
+  e.preventDefault();
+  const data = {
+    name: document.getElementById('comp-name')?.value,
+    industry: document.getElementById('comp-industry')?.value,
+    size: document.getElementById('comp-size')?.value,
+    location: document.getElementById('comp-location')?.value,
+    website: document.getElementById('comp-website')?.value,
+    description: document.getElementById('comp-desc')?.value
+  };
+  const res = await apiCall('/companies/my', 'PUT', data);
+  if (res.ok) {
+    showToast('Company profile saved!', 'success');
+    // Load company data
+    const cr = await apiCall('/companies/my');
+    if (cr.ok) {
+      const c = cr.data;
+      if (document.getElementById('comp-name')) document.getElementById('comp-name').value = c.name || '';
+      if (document.getElementById('comp-industry')) document.getElementById('comp-industry').value = c.industry || '';
+      if (document.getElementById('comp-size')) document.getElementById('comp-size').value = c.size || '';
+      if (document.getElementById('comp-location')) document.getElementById('comp-location').value = c.location || '';
+      if (document.getElementById('comp-website')) document.getElementById('comp-website').value = c.website || '';
+      if (document.getElementById('comp-desc')) document.getElementById('comp-desc').value = c.description || '';
+    }
+  } else {
+    showToast(res.message, 'error');
+  }
+}
+
+function toggleMobileMenu() {
+  const navLinks = document.querySelector('.nav-links');
+  if (navLinks) {
+    navLinks.style.display = navLinks.style.display === 'flex' ? 'none' : 'flex';
+    navLinks.style.flexDirection = 'column';
+    navLinks.style.position = 'absolute';
+    navLinks.style.top = '64px';
+    navLinks.style.left = '0';
+    navLinks.style.right = '0';
+    navLinks.style.background = 'white';
+    navLinks.style.padding = '16px';
+    navLinks.style.borderBottom = '1px solid var(--border)';
+    navLinks.style.zIndex = '999';
+  }
+}
+</script>
+</body>
+</html>
